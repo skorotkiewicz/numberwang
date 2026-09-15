@@ -57,7 +57,7 @@ verdict = max(range(4), key=probs.__getitem__)
 | 0 | That's not Numberwang. |
 | 1 | THAT'S NUMBERWANG! |
 | 2 | That's not even a number. It can never be Numberwang. |
-| 3 | That's Wangernumb! Rotate the board! |
+| 3 | That's Wangernumb! |
 
 ## What it accepts
 
