@@ -20,7 +20,7 @@ hello how are you... That's not even a number. It can never be Numberwang.  (con
 ## Usage
 
 ```bash
-git clone https://github.com/<your-username>/numberwang
+git clone https://github.com/GraafHenk/numberwang
 cd numberwang
 python3 numberwang.py 22
 ```
