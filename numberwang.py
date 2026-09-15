@@ -81,7 +81,7 @@ def main() -> None:
     if len(sys.argv) > 1:
         print(judge(model, " ".join(sys.argv[1:])))
         return
-    print("Is it Numberwang? (ctrl-c to stop playing Numberwang)")
+    print("Is it Numberwang? (ctrl-c to stop wangnet)")
     try:
         while True:
             print(judge(model, input("> ")))
