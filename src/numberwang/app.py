@@ -1,6 +1,6 @@
 """Gradio demo for numberwang. Run with:
 
-    uv run numberwang-app
+uv run numberwang-app
 """
 
 import gradio as gr

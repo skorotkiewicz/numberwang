@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
+from num2words import num2words
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset, WeightedRandomSampler
@@ -30,11 +31,6 @@ import numberwang
 # The model ships inside the numberwang package; resolve it from there so
 # distillation works from any working directory.
 DEFAULT_TEACHER = Path(numberwang.__file__).parent / "model.json"
-
-try:
-    from num2words import num2words
-except ImportError:
-    num2words = None
 
 
 # Published verdict order.
@@ -200,8 +196,6 @@ def english_ordinal_digits(n: int) -> str:
 
 
 def _word_number(n: int, lang: str, ordinal: bool = False) -> str | None:
-    if num2words is None:
-        return None
     try:
         return str(num2words(n, lang=lang, to="ordinal" if ordinal else "cardinal"))
     except Exception:
@@ -267,17 +261,16 @@ def generate_texts(
         texts.add(f"{a + 44} - {a}")
 
     # English word arithmetic.
-    if num2words is not None:
-        for _ in range(arithmetic // 3):
-            a = rng.randint(0, 200)
-            b = rng.randint(1, 100)
-            aw = _word_number(a, "en")
-            bw = _word_number(b, "en")
-            if aw and bw:
-                op, word = rng.choice(
-                    (("+", "plus"), ("-", "minus"), ("*", "times"), ("/", "divided by"))
-                )
-                texts.add(f"{aw} {word} {bw}")
+    for _ in range(arithmetic // 3):
+        a = rng.randint(0, 200)
+        b = rng.randint(1, 100)
+        aw = _word_number(a, "en")
+        bw = _word_number(b, "en")
+        if aw and bw:
+            op, word = rng.choice(
+                (("+", "plus"), ("-", "minus"), ("*", "times"), ("/", "divided by"))
+            )
+            texts.add(f"{aw} {word} {bw}")
 
     texts.update(NUMBER_DERIVED_WORDS)
     texts.update(FICTIONAL_NUMBERS)
@@ -431,8 +424,6 @@ def build_word_value_map(max_number: int) -> dict[str, int]:
         "half": 2,
         "dozen": 12,
     }
-    if num2words is None:
-        return out
     for n in range(0, max_number + 1):
         for lang in LANGS:
             w = _word_number(n, lang)
@@ -601,11 +592,6 @@ def main() -> None:
             device = torch.device("cpu")
     else:
         device = torch.device(args.device)
-
-    if num2words is None:
-        print(
-            "warning: num2words is not installed; multilingual word coverage will be sparse"
-        )
 
     print(f"device: {device}")
     texts = generate_texts(args.seed, args.max_number, args.arithmetic, args.gibberish)

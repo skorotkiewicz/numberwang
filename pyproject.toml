@@ -21,10 +21,10 @@ build-backend = "uv_build"
 [project.optional-dependencies]
 # Demo UI (gradio) — `uv sync --extra app`
 app = ["gradio>=4.44"]
-# CPU training/inference via PyTorch — `uv sync --extra cpu`
-cpu = ["numpy>=1.26", "torch>=2.3"]
+# CPU training via PyTorch — `uv sync --extra cpu`
+cpu = ["numpy>=1.26", "num2words>=0.5.14", "torch>=2.3"]
 # GPU training/inference via PyTorch CUDA 12.8 — `uv sync --extra gpu`
-gpu = ["numpy>=1.26", "torch>=2.3"]
+gpu = ["numpy>=1.26", "num2words>=0.5.14", "torch>=2.3"]
 
 [tool.uv]
 conflicts = [
@@ -52,6 +52,6 @@ explicit = true
 [dependency-groups]
 dev = [
     "gradio>=4.44",
-    "num2words[cpu]>=0.5.14",
-    "torch[cpu]>=2.9.1",
+    "num2words>=0.5.14",
+    "torch>=2.9.1",
 ]
