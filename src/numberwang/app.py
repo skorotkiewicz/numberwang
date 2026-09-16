@@ -1,10 +1,13 @@
+"""Gradio demo for numberwang. Run with:
 
+    uv run numberwang-app
+"""
 
 import gradio as gr
 
 from numberwang import load_model, wang_probabilities
 
-MODEL = load_model("model.json")
+MODEL = load_model()
 
 VERDICTS = [
     "That's not Numberwang.",
@@ -24,9 +27,18 @@ def adjudicate(text):
 
 
 EXAMPLES = [
-    ["22"], ["shinty-six"], ["45 - 44"], ["zweiundzwanzig"],
-    ["5*2"], ["double four"], ["achtneming"], ["vierendelen"],
-    ["XLIV"], ["hello how are you"], ["quatre-vingt-seize"], ["47"],
+    ["22"],
+    ["shinty-six"],
+    ["45 - 44"],
+    ["zweiundzwanzig"],
+    ["5*2"],
+    ["double four"],
+    ["achtneming"],
+    ["vierendelen"],
+    ["XLIV"],
+    ["hello how are you"],
+    ["quatre-vingt-seize"],
+    ["47"],
 ]
 
 with gr.Blocks(title="WangNet") as demo:
@@ -38,8 +50,9 @@ with gr.Blocks(title="WangNet") as demo:
         "80,804 parameters, 1.79 MB of weights, no inference dependencies."
     )
     with gr.Row():
-        box = gr.Textbox(label="Your number", placeholder="twenty-two",
-                         autofocus=True, scale=4)
+        box = gr.Textbox(
+            label="Your number", placeholder="twenty-two", autofocus=True, scale=4
+        )
         go = gr.Button("Adjudicate", variant="primary", scale=1)
     verdict = gr.Textbox(label="Verdict", interactive=False)
     scores = gr.Label(label="Confidence", num_top_classes=4)
@@ -48,5 +61,6 @@ with gr.Blocks(title="WangNet") as demo:
     box.submit(adjudicate, box, [verdict, scores])
     go.click(adjudicate, box, [verdict, scores])
 
-if __name__ == "__main__":
+
+def main() -> None:
     demo.launch()

@@ -7,14 +7,14 @@ lines of pure Python standard library — no PyTorch, no NumPy, nothing to
 install. Clone it and run it.
 
 ```console
-$ python3 numberwang.py 22
-22... THAT'S NUMBERWANG!  (confidence: 99.3%)
+$ uv run numberwang 22
+22... THAT'S NUMBERWANG!  (confidence: 73.7%)
 
-$ python3 numberwang.py "45 - 44"
-45 - 44... That's Wangernumb! Rotate the board!  (confidence: 100.0%)
+$ uv run numberwang "45 - 44"
+45 - 44... That's Wangernumb! Rotate the board!  (confidence: 90.7%)
 
-$ python3 numberwang.py "hello how are you"
-hello how are you... That's not even a number. It can never be Numberwang.  (confidence: 100.0%)
+$ uv run numberwang "hello how are you"
+hello how are you... That's not even a number. It can never be Numberwang.  (confidence: 98.7%)
 ```
 
 ## Usage
@@ -22,28 +22,29 @@ hello how are you... That's not even a number. It can never be Numberwang.  (con
 ```bash
 git clone https://github.com/GraafHenk/numberwang
 cd numberwang
-python3 numberwang.py 22
+uv sync
+uv run numberwang 22
 ```
 
 Run it with no arguments for an interactive session:
 
 ```console
-$ python3 numberwang.py
-Welcome to Numberwang! (ctrl-c to stop playing Numberwang)
+$ uv run numberwang
+Is it Numberwang? (ctrl-c to stop wangnet)
 > zweiundzwanzig
-zweiundzwanzig... THAT'S NUMBERWANG!  (confidence: 100.0%)
+zweiundzwanzig... THAT'S NUMBERWANG!
 > shinty-six
-shinty-six... That's not Numberwang.  (confidence: 100.0%)
+shinty-six... That's not Numberwang.
 ```
 
-Requires Python 3.8 or newer. That's the only requirement.
+Requires [uv](https://docs.astral.sh/uv/). That's the only requirement.
 
 ## In your own code
 
 ```python
 from numberwang import load_model, wang_probabilities
 
-model = load_model("model.json")
+model = load_model()  # loads the packaged model.json
 probs = wang_probabilities(model, "forty-seven")
 # [p_not_numberwang, p_numberwang, p_not_a_number, p_wangernumb]
 
@@ -96,11 +97,20 @@ A hosted version runs on Hugging Face Spaces. To run the same demo
 locally:
 
 ```bash
-pip install -r requirements.txt
-python3 app.py
+uv sync
+uv run numberwang-app
 ```
 
 `gradio` is needed only for the demo. The model itself never needs it.
+
+## Retraining
+
+Distill the released model into a fresh WangNet:
+
+```bash
+uv sync --extra cpu
+uv run numberwang-train --out model-retrained.json
+```
 
 ## Accuracy
 

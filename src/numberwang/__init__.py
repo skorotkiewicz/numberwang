@@ -1,13 +1,11 @@
-#!/usr/bin/env python3
-"""
+"""Numberwang: a small neural network that decides whether a number is Numberwang.
 
 Usage:
-    python3 numberwang.py 42
-    python3 numberwang.py shinty-six
-    python3 numberwang.py "5*2"
-    python3 numberwang.py zweiundzwanzig
-    python3 numberwang.py              
-
+    uv run numberwang 42
+    uv run numberwang shinty-six
+    uv run numberwang "5*2"
+    uv run numberwang zweiundzwanzig
+    uv run numberwang
 
 """
 
@@ -16,16 +14,17 @@ import math
 import os
 import sys
 
-VERDICTS = ["That's not Numberwang.",
-            "THAT'S NUMBERWANG!",
-            "That's not even a number. It can never be Numberwang.",
-            "That's Wangernumb!"]
+VERDICTS = [
+    "That's not Numberwang.",
+    "THAT'S NUMBERWANG!",
+    "That's not even a number. It can never be Numberwang.",
+    "That's Wangernumb!",
+]
 
 
 def load_model(path: str = None) -> dict:
     if path is None:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                            "model.json")
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "model.json")
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
@@ -35,8 +34,11 @@ def _conv1d_relu(seq: list, weight: list, bias: list) -> list:
     out = []
     for p in range(n_pos):
         row = []
-        window = [seq[p - 1] if p > 0 else None, seq[p],
-                  seq[p + 1] if p < n_pos - 1 else None]
+        window = [
+            seq[p - 1] if p > 0 else None,
+            seq[p],
+            seq[p + 1] if p < n_pos - 1 else None,
+        ]
         for f, b in zip(weight, bias):
             z = b
             for k, x in enumerate(window):
@@ -50,7 +52,7 @@ def _conv1d_relu(seq: list, weight: list, bias: list) -> list:
 
 def wang_probabilities(model: dict, text: str) -> list:
     chars, emb = model["chars"], model["emb"]
-    ids = [chars.get(c, 0) for c in text.strip().lower()[:model["max_len"]]]
+    ids = [chars.get(c, 0) for c in text.strip().lower()[: model["max_len"]]]
     ids += [0] * (model["max_len"] - len(ids))
     seq = [emb[i] for i in ids]
 
@@ -58,10 +60,14 @@ def wang_probabilities(model: dict, text: str) -> list:
     h = _conv1d_relu(h, model["conv2_w"], model["conv2_b"])
     pooled = [max(pos[f] for pos in h) for f in range(len(h[0]))]
 
-    hidden = [max(0.0, b + sum(w * v for w, v in zip(ws, pooled)))
-              for ws, b in zip(model["fc1_w"], model["fc1_b"])]
-    logits = [b + sum(w * v for w, v in zip(ws, hidden))
-              for ws, b in zip(model["fc2_w"], model["fc2_b"])]
+    hidden = [
+        max(0.0, b + sum(w * v for w, v in zip(ws, pooled)))
+        for ws, b in zip(model["fc1_w"], model["fc1_b"])
+    ]
+    logits = [
+        b + sum(w * v for w, v in zip(ws, hidden))
+        for ws, b in zip(model["fc2_w"], model["fc2_b"])
+    ]
     peak = max(logits)
     exps = [math.exp(z - peak) for z in logits]
     total = sum(exps)
